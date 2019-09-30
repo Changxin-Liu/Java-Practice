@@ -1,0 +1,43 @@
+package pacman.util;
+
+import java.io.Serializable;
+
+public enum Direction{
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN;
+
+    public Position offset(){
+        switch (this){
+            case LEFT:
+                return new Position(-1,0);
+            case RIGHT:
+                return new Position(1,0);
+            case UP:
+                return new Position(0,-1);
+            case DOWN:
+                return new Position(0,1);
+                default:
+                    return null;
+        }
+    }
+
+
+    public Direction opposite(){
+        switch (this){
+            case LEFT:
+                return RIGHT;
+            case RIGHT:
+                return LEFT;
+            case UP:
+                return DOWN;
+            case DOWN:
+                return UP;
+                default:
+                    return null;
+        }
+    }
+
+}
+

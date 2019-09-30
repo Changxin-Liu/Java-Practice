@@ -1,0 +1,130 @@
+package pacman.hunter;
+
+import pacman.game.Entity;
+import pacman.ghost.Ghost;
+import pacman.ghost.Phase;
+import pacman.util.Direction;
+import pacman.util.Position;
+
+/**
+ * A class representing a sepcified abstract entity, which is called "Hunter"
+ */
+public abstract class Hunter extends Entity {
+
+    // representing living or not
+    private boolean alive;
+
+    // representing if the special has been used
+    private boolean specialUsed;
+
+    // representing the duration of one special
+    private int duration;
+
+    /**
+     * Constructs an alive hunter which has not used its special yet and the
+     * duration is zero
+     */
+    public Hunter(){
+        alive = true;
+        specialUsed = false;
+        duration = 0;
+    }
+
+    /**
+     * Constructs a hunter with the copying attributes from another hunter
+     *
+     * @param original another existed hunter
+     */
+    public Hunter(Hunter original){
+        alive = original.alive;
+        specialUsed = original.specialUsed;
+        duration = original.duration;
+        setPosition(original.getPosition());
+        setDirection(original.getDirection());
+
+    }
+
+    /**
+     * Indicates if the hunter is dead
+     *
+     * @return True means dead while false means not dead
+     */
+    public  boolean isDead(){
+        return !this.alive;
+    }
+
+    /**
+     * Activate the hunter's special if he has not used his special before.
+     * If the special has been activated, nothing will change.
+     *
+     * @param duration the duration of one special, if it is greater than
+     *                 zero, it means the special will be activated
+     */
+    public void activateSpecial(int duration){
+        if(specialUsed == false){
+            if(duration > 0){
+                this.duration = duration;
+                specialUsed = true;
+            }
+        }
+    }
+
+    /**
+     * Returns the duration remaining of one special
+     *
+     * @return one special's duration
+     */
+    public int getSpecialDurationRemaining(){
+        return this.duration;
+    }
+
+    /**
+     * Indicates if one hunter's special is currently active
+     *
+     * @return True means currently active while false means not
+     */
+    public boolean isSpecialActive(){
+        return (duration > 0);
+    }
+
+
+    /**
+     * Checks if the hunter is at the same position with a ghost.
+     * If they are at the same position, if the ghost's phase is Phase.FRIGHTENED,
+     * the ghost will be killed. Otherwise, the hunter will be killed.
+     *
+     * @param ghost the target ghost to check
+     * @throws NullPointerException if the ghost is null
+     */
+    public void hit(Ghost ghost)
+            throws NullPointerException{
+        if(ghost == null){
+            throw new NullPointerException();
+        }
+
+        if(this.getPosition().equals(ghost.getPosition())){
+            if(ghost.getPhase() == Phase.FRIGHTENED){
+                ghost.kill();
+            }else {
+                this.alive = false;
+            }
+        }
+    }
+
+    /**
+     * Resets a hunter with the default settings
+     * alive - true
+     * specialUsed - false
+     * duration - 0
+     * direction - Direction.UP
+     * position - (0,0)
+     */
+    public void reset(){
+        this.alive = true;
+        this.specialUsed = false;
+        this.duration = 0;
+        setDirection(Direction.UP);
+        setPosition(new Position(0,0));
+    }
+
+}

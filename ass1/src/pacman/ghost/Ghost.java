@@ -1,0 +1,113 @@
+package pacman.ghost;
+
+import pacman.game.Entity;
+import pacman.util.Direction;
+import pacman.util.Position;
+
+/**
+ * A class representing a specified abstract entity, which is called "Ghost"
+ */
+public abstract class Ghost extends Entity {
+
+    // representing living or not
+    private boolean alive;
+
+    // the different phases a ghost can be in
+    private Phase phase;
+
+    // the duration of the phase
+    private int duration;
+
+    /**
+     * Constructs an alive ghost which is in the SCATTER phase with the
+     * duration of Phase.SCATTER.duration()
+     */
+    public Ghost(){
+        super();
+        this.alive = true;
+        this.phase = Phase.SCATTER;
+        this.duration = Phase.SCATTER.getDuration();
+
+    }
+
+
+    /**
+     * Sets the given phase and duration to a ghost. If the given phase is
+     * null, the current phase will not change. If the given duration is
+     * greater than or equal to zero, override the current duration with the
+     * new one. Otherwise, set the duration to zero.
+     *
+     * @param newPhase the given phase
+     * @param duration the given duration
+     */
+    public void setPhase(Phase newPhase, int duration){
+        if(newPhase != null){
+            this.phase = newPhase;
+        }
+        if(duration >= 0){
+            this.duration = duration;
+        }else {
+            this.duration = 0;
+        }
+    }
+
+    /**
+     * Returns the current phase of a ghost
+     *
+     * @return a ghost's current phase
+     */
+    public Phase getPhase(){
+        return this.phase;
+    }
+
+    /**
+     * Returns the infomation of one ghost's phase and duration
+     *
+     * @return a String to indicate the current phase and duration
+     */
+    public String phaseInfo(){
+        return this.phase + ":" + this.duration;
+    }
+
+    /**
+     * Gets the colour of a ghost
+     *
+     * @return a ghost's colour
+     */
+    public abstract String getColour();
+
+    /**
+     * Gets the type of a ghost
+     *
+     * @return a ghost's type
+     */
+    public abstract GhostType getType();
+
+    /**
+     * Kills a ghost by setting the living status false
+     */
+    public void kill(){
+        this.alive = false;
+    }
+
+    /**
+     * Indicates if a ghost is dead.
+     * True means dead while false means not dead.
+     *
+     * @return the living status of a ghost
+     */
+    public boolean isDead(){
+        return !this.alive;
+    }
+
+    /**
+     * Resets a ghost with default the values in the constructor.
+     */
+    public void reset(){
+        this.alive = true;
+        this.phase = Phase.SCATTER;
+        this.duration = Phase.SCATTER.getDuration();
+        setDirection(Direction.UP);
+        setPosition(new Position(0,0));
+    }
+}

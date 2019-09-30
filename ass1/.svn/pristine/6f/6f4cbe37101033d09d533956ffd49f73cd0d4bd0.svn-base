@@ -1,0 +1,17 @@
+package pacman.hunter;
+
+public class Phil extends Hunter {
+
+    public Phil(){
+        super();
+    }
+
+    public Phil(Hunter original){
+        super(original);
+    }
+
+    @Override
+    public boolean isSpecialActive() {
+        return false;
+    }
+}

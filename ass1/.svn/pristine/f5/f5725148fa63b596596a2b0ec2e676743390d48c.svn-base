@@ -1,0 +1,65 @@
+package pacman.board;
+
+public enum BoardItem{
+    NONE(true, 0, '0'),
+    WALL(false, 0, 'X'),
+    DOT(true, 10, '1'),
+    BIG_DOT(true, 15, 'B'),
+    BIG_DOT_SPAWN(true, 0, 'b'),
+    GHOST_SPAWN(true, 0, '$'),
+    PACMAN_SPAWN(true, 0, 'P');
+
+
+    private boolean pathable;
+    private int score;
+    private char aChar;
+
+    private BoardItem(boolean pathable, int score, char aChar){
+        this.pathable = pathable;
+        this.score = score;
+        this.aChar = aChar;
+    }
+
+    public int getScore(){
+        return this.score;
+    }
+
+    public boolean getPathable() {
+        return this.pathable;
+    }
+
+    public char getChar(){
+        return this.aChar;
+    }
+
+    public static BoardItem getItem(char key) throws IllegalArgumentException{
+        if (key != 'o' &&
+                key != 'X' &&
+                key != '1' &&
+                key != 'B' &&
+                key != 'b' &&
+                key != '$' &&
+                key != 'P'){
+            throw new IllegalArgumentException();
+        }
+        switch (key){
+            case 'o':
+                return BoardItem.NONE;
+            case 'X':
+                return BoardItem.WALL;
+            case '1':
+                return BoardItem.DOT;
+            case 'B':
+                return BoardItem.BIG_DOT;
+            case 'b':
+                return BoardItem.BIG_DOT_SPAWN;
+            case '$':
+                return BoardItem.GHOST_SPAWN;
+            case 'P':
+                return BoardItem.PACMAN_SPAWN;
+                default:
+                    return null;
+        }
+    }
+}
+

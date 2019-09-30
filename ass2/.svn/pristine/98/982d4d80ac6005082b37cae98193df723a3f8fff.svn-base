@@ -1,0 +1,651 @@
+package pacman.game;
+
+import pacman.board.BoardItem;
+import pacman.board.PacmanBoard;
+import pacman.ghost.*;
+import pacman.hunter.*;
+import pacman.util.Direction;
+import pacman.util.Position;
+import pacman.util.UnpackableException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+public class GameReader {
+
+    private static String rawRecord;
+    private static String[] recordsByLine;
+    private static int boardRows;
+    private static int boardColumns;
+    private static StringBuilder boardMap;
+    private static String title;
+    private static String author;
+    private static int lives;
+    private static int level;
+    private static int score;
+    private static Hunter hunter;
+    private static String[] hunterValueArray;
+    private static Direction hunterDirection;
+    private static Ghost blinky;
+    private static Ghost inky;
+    private static Ghost pinky;
+    private static Ghost clyde;
+    private static String[] blinkyValueArray;
+    private static String[] inkyValueArray;
+    private static String[] pinkyValueArray;
+    private static String[] clydeValueArray;
+
+    public GameReader(){
+
+    }
+
+    public static PacmanGame read(Reader reader)
+            throws UnpackableException, IOException{
+
+        String finalTitle;
+        String finalAuthor;
+        Hunter finalHunter;
+        PacmanBoard finalPacmanBoard;
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String rawString;
+
+            while ((rawString = bufferedReader.readLine()) != null) {
+
+                if (!rawString.equals("")) {
+                    if (rawString.charAt(0) != ';') {
+                        stringBuilder.append(rawString);
+                        stringBuilder.append(System.lineSeparator());
+                    }
+                }else {
+                    stringBuilder.append(rawString);
+                    stringBuilder.append(System.lineSeparator());
+                }
+            }
+
+            rawRecord = stringBuilder.toString();
+
+        } catch (IOException e){
+            throw  new IOException();
+        }
+
+        recordsByLine = rawRecord.split(System.lineSeparator());
+
+        validateBoard();
+        validateBoardSize();
+        validateBlankLine();
+        validateBoardMap();
+        validateGame();
+        validateAssignments(getAssignments());
+        validateScore();
+        Map<String, Integer> scoreEntry = validateEntries();
+        finalTitle =title;
+        finalAuthor = author;
+        finalHunter = setHunter(hunter,hunterDirection,hunterValueArray);
+        finalPacmanBoard = getBoard();
+
+        PacmanGame pacmanGame = new PacmanGame(finalTitle,finalAuthor,
+                finalHunter,finalPacmanBoard);
+        setGhost(pacmanGame, blinky, inky, pinky, clyde, blinkyValueArray,
+                inkyValueArray, pinkyValueArray, clydeValueArray);
+        pacmanGame.getScores().setScores(scoreEntry);
+        pacmanGame.getScores().increaseScore(score);
+        pacmanGame.setLevel(level);
+        pacmanGame.setLives(lives);
+
+        return pacmanGame;
+    }
+
+    private static void validateBoard() throws UnpackableException{
+        String stringBoard = recordsByLine[0];
+        if (!stringBoard.equals("[Board]")){
+            throw new UnpackableException();
+        }
+    }
+
+    private static void validateBoardSize() throws UnpackableException{
+        String boardSize = recordsByLine[1];
+        String[] boardArray;
+        try{
+            boardArray = boardSize.split(",",2);
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+
+        try{
+            boardRows = Integer.parseInt(boardArray[1]);
+            boardColumns = Integer.parseInt(boardArray[0]);
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+    }
+
+    private static void validateBlankLine() throws UnpackableException{
+        int firstBlankLineIndex = 1 + boardRows + 1;
+        int secondBlankLineIndex = firstBlankLineIndex + 12;
+        int blankLineCount = 0;
+
+        String firstBlankLine = recordsByLine[firstBlankLineIndex];
+        String secondBlankLine = recordsByLine[secondBlankLineIndex];
+
+        if (!firstBlankLine.equals("") || !secondBlankLine.equals("")){
+            throw new UnpackableException();
+        }
+
+        try{
+            String []records = rawRecord.split(System.lineSeparator()
+                    + "" + System.lineSeparator(),3);
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+
+        for (int i = 0; i < recordsByLine.length; i++){
+            if (recordsByLine[i].equals("")){
+                blankLineCount++;
+            }
+            if (blankLineCount > 2){
+                throw new UnpackableException();
+            }
+        }
+    }
+
+    private static void validateBoardMap() throws UnpackableException{
+        boardMap = new StringBuilder();
+        for (int i = 2; i < boardRows + 2; i++){
+            boardMap.append(recordsByLine[i]);
+        }
+
+        if (boardMap.length() != boardRows * boardColumns){
+            throw new UnpackableException();
+        }
+
+        for (int i = 0; i < boardMap.length(); i++){
+
+            if (!(boardMap.charAt(i) == 'X' || boardMap.charAt(i) == '1' ||
+                    boardMap.charAt(i) == '0' || boardMap.charAt(i) == 'B' ||
+                    boardMap.charAt(i) == 'b' || boardMap.charAt(i) == 'P' ||
+                    boardMap.charAt(i) == '$')){
+                throw new UnpackableException();
+            }
+
+        }
+    }
+
+    private static PacmanBoard getBoard(){
+        PacmanBoard pacmanBoard = new PacmanBoard(boardColumns, boardRows);
+        BoardItem[] boardItems = new BoardItem[boardRows * boardColumns];
+
+        for (int i = 0; i < boardMap.length(); i++){
+            switch (boardMap.charAt(i)){
+                case 'X':
+                    boardItems[i] = BoardItem.WALL;
+                    break;
+                case '1':
+                    boardItems[i] = BoardItem.DOT;
+                    break;
+                case '0':
+                    boardItems[i] = BoardItem.NONE;
+                    break;
+                case 'B':
+                    boardItems[i] = BoardItem.BIG_DOT;
+                    break;
+                case 'b':
+                    boardItems[i] = BoardItem.BIG_DOT_SPAWN;
+                    break;
+                case 'P':
+                    boardItems[i] = BoardItem.PACMAN_SPAWN;
+                    break;
+                case '$':
+                    boardItems[i] = BoardItem.GHOST_SPAWN;
+                    break;
+                    default:
+                        boardItems[i] = null;
+            }
+        }
+
+        for (int y = 0; y < boardRows; y++){
+            for (int x = 0; x < boardColumns; x++){
+                pacmanBoard.setEntry(new Position(x, y),
+                        boardItems[y * boardColumns + x]);
+            }
+        }
+        return pacmanBoard;
+    }
+
+
+    private static void validateGame() throws UnpackableException{
+        String stringGame = recordsByLine[1 + boardRows + 2];
+        if (!stringGame.equals("[Game]")){
+            throw new UnpackableException();
+        }
+    }
+
+    private static String[] getAssignments(){
+        String[] stringKey = new String[10];
+        int counter = 0;
+        for (int i = boardRows + 4; i < boardRows + 14; i++){
+            stringKey[counter] = recordsByLine[i];
+            counter++;
+        }
+
+        return stringKey;
+    }
+
+    private static void validateEquationMark(String assignment)
+            throws UnpackableException{
+        int equationMarkNum = 0;
+        for (int i = 0; i < assignment.length(); i++){
+            if (assignment.charAt(i) == '='){
+                equationMarkNum++;
+            }
+        }
+
+        if (equationMarkNum != 1){
+            throw new UnpackableException();
+        }
+    }
+
+    private static void validateHunterComma(String value) throws UnpackableException{
+        int commaNum = 0;
+        for (int i = 0; i < value.length(); i++){
+            if (value.charAt(i) == ','){
+                commaNum++;
+            }
+        }
+
+        if (commaNum != 4){
+            throw new UnpackableException();
+        }
+    }
+
+    private static String validateString(String string) throws UnpackableException{
+        String[] stringsArray = string.split("=",2);
+        if (!stringsArray[1].trim().getClass().getName().equals
+                ("java.lang.String")) {
+            throw new UnpackableException();
+        }
+        return stringsArray[1].trim();
+    }
+
+    private static int validateInteger(String integer) throws UnpackableException{
+        String[] integersArray = integer.split("=",2);
+        int value;
+        try{
+            value = Integer.parseInt(integersArray[1].trim());
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+
+        if (value < 0){
+            throw new UnpackableException();
+        }
+        return value;
+    }
+
+    private static void validateCoordinate(String[] valueArray)
+            throws UnpackableException{
+        try{
+            int x = Integer.parseInt(valueArray[0].trim());
+            int y = Integer.parseInt(valueArray[1].trim());
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+    }
+
+    private static Direction validateDirection(String[] valueArray)
+            throws UnpackableException{
+        Direction direction;
+        switch (valueArray[2].trim()){
+            case "LEFT":
+                direction = Direction.LEFT;
+                break;
+            case "RIGHT":
+                direction = Direction.RIGHT;
+                break;
+            case "UP":
+                direction = Direction.UP;
+                break;
+            case "DOWN":
+                direction = Direction.DOWN;
+                break;
+            default:
+                throw new UnpackableException();
+        }
+        return direction;
+    }
+
+    private static void validateHunterDuartion(String[] valueArray)
+            throws UnpackableException{
+
+        try{
+            int duration = Integer.parseInt(valueArray[3].trim());
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+    }
+
+    private static Hunter validateHunter(String hunter)
+            throws UnpackableException{
+        String[] hunterArray = hunter.split("=",2);
+        String value = hunterArray[1];
+        validateHunterComma(value);
+        hunterValueArray = value.split(",",5);
+
+        validateCoordinate(hunterValueArray);
+        hunterDirection = validateDirection(hunterValueArray);
+        validateHunterDuartion(hunterValueArray);
+
+        HunterType hunterType;
+        switch (hunterValueArray[4].trim()){
+            case "SPEEDY":
+                hunterType = HunterType.SPEEDY;
+                break;
+            case "PHASEY":
+                hunterType = HunterType.PHASEY;
+                break;
+            case "HUNGRY":
+                hunterType = HunterType.HUNGRY;
+                break;
+            case "PHIL":
+                hunterType = HunterType.PHIL;
+                break;
+                default:
+                    throw new UnpackableException();
+        }
+
+        Hunter hunterInstance;
+        switch (hunterType){
+            case PHIL:
+                return new Phil();
+            case HUNGRY:
+                return new Hungry();
+            case PHASEY:
+                return new Phasey();
+            case SPEEDY:
+                return new Speedy();
+                default:
+                    throw new UnpackableException();
+        }
+
+    }
+
+    private static void validateGhostComma(String value) throws UnpackableException{
+        int commaNum = 0;
+        for (int i = 0; i < value.length(); i++){
+            if (value.charAt(i) == ','){
+                commaNum++;
+            }
+        }
+
+        if (commaNum != 3){
+            throw new UnpackableException();
+        }
+    }
+
+    private static void validateColom(String value)
+            throws UnpackableException{
+        int colomNum = 0;
+        for (int i = 0; i < value.length(); i++){
+            if (value.charAt(i) == ':'){
+                colomNum++;
+            }
+        }
+
+        if (colomNum != 1){
+            throw new UnpackableException();
+        }
+    }
+
+    private static Ghost validateGhost(String ghost)
+            throws UnpackableException{
+        String[] ghostsArray = ghost.split("=",2);
+        String value = ghostsArray[1].trim();
+        validateGhostComma(value);
+        String[] ghostValueArray = value.split(",",4);
+
+        validateCoordinate(ghostValueArray);
+        Direction ghostDirection = validateDirection(ghostValueArray);
+
+        String ghostDuration = ghostValueArray[3];
+        validateColom(ghostDuration);
+        String[] duration = ghostDuration.split(":",2);
+
+
+        try{
+            int ghostPhaseDuration = Integer.parseInt(duration[1].trim());
+            if (ghostPhaseDuration < 0){
+                throw new UnpackableException();
+            }
+        }catch (Exception e){
+            throw new UnpackableException();
+        }
+
+        switch (ghostsArray[0].trim()){
+            case "blinky":
+                blinkyValueArray = ghostValueArray;
+                return new Blinky();
+            case "clyde":
+                clydeValueArray = ghostValueArray;
+                return new Clyde();
+            case "inky":
+                inkyValueArray = ghostValueArray;
+                return new Inky();
+            case "pinky":
+                pinkyValueArray = ghostValueArray;
+                return new Pinky();
+                default:
+                    throw new UnpackableException();
+        }
+
+    }
+
+    private static void validateAssignments(String[] assignments)
+            throws UnpackableException{
+
+        int titleNum = 0;
+        int authorNum = 0;
+        int livesNum = 0;
+        int levelNum = 0;
+        int scoreNum = 0;
+        int hunterNum = 0;
+        int blinkyNum = 0;
+        int inkyNum = 0;
+        int pinkyNum = 0;
+        int clydeNum = 0;
+
+        for (String assignment : assignments) {
+            validateEquationMark(assignment);
+            switch (assignment.split("=",2)[0].trim()){
+                case "title":
+                    title = validateString(assignment);
+                    titleNum++;
+                    break;
+                case "author":
+                    author = validateString(assignment);
+                    authorNum++;
+                    break;
+                case "lives":
+                    lives = validateInteger(assignment);
+                    livesNum++;
+                    break;
+                case "level":
+                    level = validateInteger(assignment);
+                    levelNum++;
+                    break;
+                case "score":
+                    score = validateInteger(assignment);
+                    scoreNum++;
+                    break;
+                case "hunter":
+                    hunter = validateHunter(assignment);
+                    hunterNum++;
+                    break;
+                case "blinky":
+                    blinky = validateGhost(assignment);
+                    blinkyNum++;
+                    break;
+                case "inky":
+                    inky = validateGhost(assignment);
+                    inkyNum++;
+                    break;
+                case "pinky":
+                    pinky = validateGhost(assignment);
+                    pinkyNum++;
+                    break;
+                case "clyde":
+                    clyde = validateGhost(assignment);
+                    clydeNum++;
+                    break;
+                    default:
+                        throw new UnpackableException();
+            }
+        }
+
+        if (!(titleNum == 1 && authorNum == 1 && livesNum ==1
+                && levelNum == 1 && scoreNum ==1 && hunterNum == 1
+                && blinkyNum == 1 && inkyNum ==1 && pinkyNum == 1
+                && clydeNum == 1)){
+            throw new UnpackableException();
+        }
+    }
+
+    private static void validateScore() throws UnpackableException{
+        String stringScore = recordsByLine[1 + boardRows + 1 + 13];
+        if (!stringScore.equals("[Scores]")){
+            throw new UnpackableException();
+        }
+    }
+
+    private static Map<String, Integer> validateEntries()
+            throws UnpackableException{
+        Map<String, Integer> scoreMap = new HashMap<>();
+        List<String> entryList = new LinkedList<>();
+        List<String> keyList = new LinkedList<>();
+        List<Integer> valueList = new LinkedList<>();
+        for (int i = 1 + boardRows + 1 + 13 + 1; i < recordsByLine.length; i++){
+            if (!recordsByLine[i].equals("")){
+                entryList.add(recordsByLine[i]);
+            }
+        }
+
+        for (int i = 0; i < entryList.size(); i++){
+            validateColom(entryList.get(i));
+            try {
+                keyList.add
+                        (entryList.get(i).split(":",2)[0].trim());
+                valueList.add(Integer.parseInt
+                        (entryList.get(i).split(":",2)[1].trim()));
+            }catch (Exception e){
+                throw new UnpackableException();
+            }
+        }
+
+        for (int i = 0; i < keyList.size(); i++){
+            scoreMap.put(keyList.get(i),valueList.get(i));
+        }
+
+        return scoreMap;
+    }
+
+    private static Hunter setHunter
+            (Hunter hunter, Direction hunterDirection,
+             String[] hunterValueArray){
+
+
+        hunter.setPosition(new Position
+                (Integer.parseInt(hunterValueArray[0].trim()),
+                        Integer.parseInt(hunterValueArray[1].trim())));
+        hunter.setDirection(hunterDirection);
+        hunter.activateSpecial(Integer.parseInt
+                (hunterValueArray[3].trim()));
+
+        return hunter;
+    }
+
+    private static Phase getPhase(String[] ghostValueArray){
+
+        switch (ghostValueArray[3].split(":",2)[0].trim()){
+            case "CHASE":
+                return Phase.CHASE;
+            case "FRIGHTENED":
+                return Phase.FRIGHTENED;
+            case "SCATTER":
+                return Phase.SCATTER;
+                default:
+                    return null;
+        }
+    }
+
+    private static int getGhostDuration(String[] ghostValueArray){
+        return Integer.parseInt
+                (ghostValueArray[3].split(":",2)[1].trim());
+    }
+
+    private static Direction getGhostDirection(String[] ghostValueArray){
+        switch (ghostValueArray[2].trim()){
+            case "UP":
+                return Direction.UP;
+            case "DOWN":
+                return Direction.DOWN;
+            case "LEFT":
+                return Direction.LEFT;
+            case "RIGHT":
+                return Direction.RIGHT;
+                default:
+                    return null;
+        }
+    }
+
+    private static void setGhost(PacmanGame pacmanGame, Ghost blinky,
+                                 Ghost inky, Ghost pinky, Ghost clyde,
+                                 String[] blinkyValueArray,
+                                 String[] inkyValueArray,
+                                 String[] pinkyValueArray,
+                                 String[] clydeValueArray){
+        for (Ghost ghost : pacmanGame.getGhosts()) {
+            switch (ghost.getType()){
+                case BLINKY:
+                    ghost.setPosition(new Position
+                            (Integer.parseInt(blinkyValueArray[0]),
+                                    Integer.parseInt(blinkyValueArray[1])));
+                    ghost.setPhase(getPhase(blinkyValueArray),
+                            getGhostDuration(blinkyValueArray));
+                    ghost.setDirection(getGhostDirection(blinkyValueArray));
+                    break;
+                case INKY:
+                    ghost.setPosition(new Position
+                            (Integer.parseInt(inkyValueArray[0]),
+                                    Integer.parseInt(inkyValueArray[1])));
+                    ghost.setPhase(getPhase(inkyValueArray),
+                            getGhostDuration(inkyValueArray));
+                    ghost.setDirection(getGhostDirection(inkyValueArray));
+                    break;
+                case PINKY:
+                    ghost.setPosition(new Position
+                            (Integer.parseInt(pinkyValueArray[0]),
+                                    Integer.parseInt(pinkyValueArray[1])));
+                    ghost.setPhase(getPhase(pinkyValueArray),
+                            getGhostDuration(pinkyValueArray));
+                    ghost.setDirection(getGhostDirection(pinkyValueArray));
+                    break;
+                case CLYDE:
+                    ghost.setPosition(new Position
+                            (Integer.parseInt(clydeValueArray[0]),
+                                    Integer.parseInt(clydeValueArray[1])));
+                    ghost.setPhase(getPhase(clydeValueArray),
+                            getGhostDuration(clydeValueArray));
+                    ghost.setDirection(getGhostDirection(clydeValueArray));
+                    break;
+                    default:
+                        return;
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+package pacman.util;
+
+public class Position {
+
+    private int x;
+    private int y;
+
+    public Position(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX(){
+        return x;
+    }
+
+    public int getY(){
+        return y;
+    }
+
+    public double distance(Position other){
+        int tempX = other.getX();
+        int tempY = other.getY();
+        return Math.sqrt((tempX - this.x) * (tempX - this.x) + (tempY - this.y) * (tempY - this.y));
+    }
+
+    public Position add(Position other){
+        int tempX = other.getX();
+        int tempY = other.getY();
+        return new Position(this.x + tempX, this.y + tempY);
+    }
+
+    public Position multiply(int factor){
+        return new Position(this.x * factor, this.y * factor);
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if (other instanceof Position){
+            Position otherPosition = (Position)other;
+            return (x == otherPosition.getX() && y == otherPosition.getY());
+        }
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode(){
+        return 19 * this.x + 23 * this.y;
+    }
+
+}

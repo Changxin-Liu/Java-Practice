@@ -1,0 +1,30 @@
+package pacman.hunter;
+
+import pacman.ghost.Ghost;
+import pacman.ghost.Phase;
+
+public class Phasey extends Hunter {
+
+    private boolean alive;
+
+    public Phasey(){
+        super();
+    }
+
+    public Phasey(Hunter original){
+        super(original);
+    }
+
+    @Override
+    public void hit(Ghost ghost) {
+        if (ghost == null){
+            throw new NullPointerException();
+        }
+
+        if (this.isSpecialActive() == true && ghost.getPhase() != Phase.FRIGHTENED){
+
+        }else {
+            super.hit(ghost);
+        }
+    }
+}

@@ -1,0 +1,45 @@
+package pacman.board;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class PacmanBoardTest {
+
+    @Before
+
+    @Test
+    public void getWidth() {
+    }
+
+    @Test
+    public void getHeight() {
+    }
+
+    @Test
+    public void setEntry() {
+    }
+
+    @Test
+    public void getEntry() {
+    }
+
+    @Test
+    public void eatDot() {
+    }
+
+    @Test
+    public void getGhostSpawn() {
+    }
+
+    @Test
+    public void getPacmanSpawn() {
+    }
+
+    @Test
+    public void isEmpty() {
+    }
+
+    @Test
+    public void reset() {
+    }
+}

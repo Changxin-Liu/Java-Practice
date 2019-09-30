@@ -1,0 +1,236 @@
+package pacman.score;
+
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.*;
+
+public class ScoreBoardTest {
+
+    private ScoreBoard scoreBoard;
+    private List sortByNameList;
+    private List sortByScoreList;
+    private Map<String, Integer> map1;
+    private Map<String, Integer> map2;
+    private Set<Map.Entry<String,Integer>> set1;
+    private Set<Map.Entry<String,Integer>> set2;
+    private Queue<Map.Entry<String, Integer>> queue;
+
+
+
+    @Before
+    public void setUp(){
+        scoreBoard = new ScoreBoard();
+
+        sortByNameList = new ArrayList();
+        map1 = new HashMap<>();
+
+        map1.put("0Ben",0235);
+        map1.put("Ben",0234);
+        map1.put("Lcx",984);
+        map1.put("Tony",229);
+        map1.put("ben",156);
+        map1.put("l1c0x",984);
+        map1.put("lcX",984);
+        map1.put("tony",0);
+        set1 = map1.entrySet();
+        sortByNameList = format(addToList(set1));
+        Collections.sort(sortByNameList);
+
+        List list = new ArrayList();
+        map2 = new HashMap<>();
+
+        map2.put("0Ben",0235);
+        map2.put("Ben",0234);
+        map2.put("Lcx",984);
+        map2.put("Tony",229);
+        map2.put("ben",156);
+        map2.put("l1c0x",984);
+        map2.put("lcX",984);
+        map2.put("tony",0);
+        set2 = map2.entrySet();
+        queue = new LinkedList<>();
+        for (Map.Entry<String, Integer> entry : set2) {
+            queue.offer(entry);
+        }
+        sortQueue(queue);
+        int queueSize = queue.size();
+        for (int i = 0; i < queueSize; i++) {
+            list.add(queue.poll());
+        }
+        sortByScoreList =format(list);
+
+
+
+
+
+
+
+    }
+
+    @Test
+    public void Constructor1(){
+        assertEquals(0,scoreBoard.getScore());
+        assertEquals(new ArrayList<>(),scoreBoard.getEntriesByName());
+        assertEquals(new ArrayList<>(),scoreBoard.getEntriesByScore());
+    }
+
+
+
+    @Test
+    public void getEntriesByName() {
+        scoreBoard.setScore("!!!oe",00123);
+        scoreBoard.setScore("!!!",00123);
+        scoreBoard.setScore("/';lcx",984);
+        scoreBoard.setScore("l1c0x",984);
+        scoreBoard.setScore("l?c?x",984);
+        scoreBoard.setScore("Lcx",984);
+        scoreBoard.setScore("lcX",984);
+        scoreBoard.setScore("Ben",0234);
+        scoreBoard.setScore("ben",0234);
+        scoreBoard.setScore("0Ben",0235);
+        scoreBoard.setScore("Tony", 0345);
+        scoreBoard.setScore(null,0104);
+        scoreBoard.setScore("tony",0);
+        scoreBoard.setScore("Nora",-100);
+        assertEquals(sortByNameList,scoreBoard.getEntriesByName());
+
+    }
+
+    @Test
+    public void getEntriesByScore() {
+        scoreBoard.setScore("!!!oe",00123);
+        scoreBoard.setScore("!!!",00123);
+        scoreBoard.setScore("/';lcx",984);
+        scoreBoard.setScore("l1c0x",984);
+        scoreBoard.setScore("l?c?x",984);
+        scoreBoard.setScore("Lcx",984);
+        scoreBoard.setScore("lcX",984);
+        scoreBoard.setScore("Ben",0234);
+        scoreBoard.setScore("ben",0234);
+        scoreBoard.setScore("0Ben",0235);
+        scoreBoard.setScore("Tony", 0345);
+        scoreBoard.setScore(null,0104);
+        scoreBoard.setScore("tony",0);
+        scoreBoard.setScore("Nora",-100);
+        scoreBoard.getEntriesByScore();
+        assertEquals(sortByScoreList,scoreBoard.getEntriesByScore());
+    }
+
+
+    @Test
+    public void setScores() {
+        Map<String, Integer> scores1 = null;
+        ScoreBoard scoreBoard2 = new ScoreBoard();
+        scoreBoard2.setScores(scores1);
+        assertEquals(new ArrayList<>(), scoreBoard2.getEntriesByScore());
+        assertEquals(new ArrayList<>(), scoreBoard2.getEntriesByName());
+
+        ScoreBoard scoreBoard3 = new ScoreBoard();
+        Map<String, Integer> scores = new HashMap<>();
+        scores.put("!!!oe",00123);
+        scores.put("!!!",00123);
+        scores.put("/';lcx",984);
+        scores.put("l1c0x",984);
+        scores.put("l?c?x",984);
+        scores.put("Lcx",984);
+        scores.put("lcX",984);
+        scores.put("Ben",0234);
+        scores.put("ben",0234);
+        scores.put("0Ben",0235);
+        scores.put("Tony", 0345);
+        scores.put(null,104);
+        scores.put("tony",0);
+        scores.put("Nora",-100);
+        scores.put(null,null);
+        scores.put("nora",null);
+        scoreBoard3.setScores(scores);
+        assertEquals(sortByScoreList,scoreBoard3.getEntriesByScore());
+        assertEquals(sortByNameList,scoreBoard3.getEntriesByName());
+    }
+
+    @Test
+    public void increaseScore() {
+        scoreBoard.increaseScore(10);
+        assertEquals(10,scoreBoard.getScore());
+        scoreBoard.increaseScore(0);
+        assertEquals(10,scoreBoard.getScore());
+        scoreBoard.increaseScore(-3);
+        assertEquals(10,scoreBoard.getScore());
+        scoreBoard.increaseScore(20);
+        assertEquals(30,scoreBoard.getScore());
+    }
+
+
+
+    @Test
+    public void reset() {
+        scoreBoard.increaseScore(39);
+        assertEquals(39,scoreBoard.getScore());
+        scoreBoard.reset();
+        assertEquals(0,scoreBoard.getScore());
+    }
+
+    /*
+     * Standardizes the record in the score board
+     *
+     * @parameter the set that needs to be formatted
+     * @return a string with a standard format
+     */
+    private List<Map.Entry<String,
+            Integer>> addToList(Set<Map.Entry<String,
+            Integer>> set){
+        List<Map.Entry<String, Integer>> tempList = new ArrayList<>();
+        for (Map.Entry<String,Integer> entry : set){
+            tempList.add(entry);
+        }
+        return tempList;
+    }
+
+    /*
+     * Standardizes the record in the score board
+     *
+     * @return a string with a standard format
+     */
+    private List<String> format(List<Map.Entry<String, Integer>> entryList){
+
+        List<String> formatList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : entryList){
+            String entryFormat = entry.getKey() + " : " + entry.getValue();
+            formatList.add(entryFormat);
+        }
+        return formatList;
+    }
+
+    /*
+     * Sorts a queue in descending order
+     */
+    private void sortQueue(Queue<Map.Entry<String,
+            Integer>> queue){
+        int queueSize = queue.size();
+        for (int i = 0; i < queueSize; i++){
+
+            Map.Entry<String, Integer> first = queue.peek();
+            queue.poll();
+            int size = queue.size();
+            Map.Entry<String, Integer> second = queue.peek();
+
+            for (int j = 0; j < size; j++){
+                if (first.getValue() <= second.getValue()){
+                    queue.offer(second);
+                    queue.poll();
+                    second = queue.peek();
+                }else {
+                    queue.offer(first);
+                    first = second;
+                    queue.poll();
+                    second = queue.peek();
+                }
+            }
+            queue.offer(first);
+        }
+    }
+}
+
+

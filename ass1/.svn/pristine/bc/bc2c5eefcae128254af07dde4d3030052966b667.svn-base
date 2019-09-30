@@ -1,0 +1,209 @@
+package pacman.score;
+
+import java.util.*;
+
+/**
+ * A class representing the score board, which contains both previous scores
+ * and the current score. A score contains both the player's name and the value.
+ */
+public class ScoreBoard {
+
+    // the score board to save the records
+    private Map<String, Integer> scoreBoard;
+
+    // the current score
+    private int currentScore;
+
+    /**
+     * Constructs a score board without records in it and the set the
+     * current score to zero.
+     */
+    public ScoreBoard(){
+        scoreBoard = new HashMap<>();
+        currentScore = 0;
+    }
+
+    /**
+     * Sort the score board by name in lexicographic order
+     *
+     * @return the sorted board list
+     */
+    public List<String> getEntriesByName(){
+        if (scoreBoard != null) {
+            Set<Map.Entry<String, Integer>> set = scoreBoard.entrySet();
+            // Format the list
+            List<String> scoreEntryList = format(addToList(set));
+            // Sort the list in lexicography ord
+            Collections.sort(scoreEntryList);
+            return scoreEntryList;
+        }
+        return new ArrayList<>();
+
+    }
+
+    /**
+     * Sort the score board by score in descending order
+     *
+     * @return the sorted board list
+     */
+    public List<String> getEntriesByScore(){
+        if (scoreBoard != null) {
+            Set<Map.Entry<String, Integer>> set = scoreBoard.entrySet();
+            // Sort the entries in score order by using a queue
+            Queue<Map.Entry<String, Integer>> queue = new LinkedList<>();
+            for (Map.Entry<String, Integer> entry : set) {
+                queue.offer(entry);
+            }
+            sortQueue(queue);
+            List<Map.Entry<String, Integer>> list = new ArrayList<>();
+            int queueSize = queue.size();
+            for (int i = 0; i < queueSize; i++) {
+                list.add(queue.poll());
+            }
+            return format(list);
+        }
+        return new ArrayList<>();
+
+    }
+
+    /**
+     * Sets a score in the score board. If there already exists a record with
+     * the same name, the value should be overriden by the new value.
+     *
+     * @param name the name to be set in the score board
+     * @param score the value to be set in the score board
+     */
+    public void setScore(String name, int score){
+        if (name != null){
+            if (score >= 0 && validName(name)){
+                scoreBoard.put(name, score);
+            }
+        }
+    }
+
+    /**
+     * Sets a collection of scores in the score board. If there already exists a
+     * record with the same name, the should be overriden by the new value. If the
+     * collection of scores is null, no scores will be modified.
+     *
+     * @param scores the collection of scores
+     */
+    public void setScores(Map<String,Integer> scores){
+        if (scores != null){
+            Set<String> key = scores.keySet();
+            for (String name : key){
+                if (name != null){
+                    if (scores.get(name) != null &&
+                            scores.get(name) >= 0 &&
+                            validName(name)){
+                        scoreBoard.put(name, scores.get(name));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Increases the current score
+     *
+     * @param additional the score to be added
+     */
+    public void increaseScore(int additional){
+        if (additional >= 0) {
+            currentScore += additional;
+        }
+    }
+
+    /**
+     * Returns the current score
+     *
+     * @return the current score
+     */
+    public int getScore(){
+        return currentScore;
+    }
+
+    /**
+     * Resets the current score to zero
+     */
+    public void reset(){
+        currentScore = 0;
+    }
+
+    /*
+     * Adds the elements in a set to a list
+     *
+     * @return a list containing the elements from a given set
+     */
+    private List<Map.Entry<String,
+            Integer>> addToList(Set<Map.Entry<String,
+            Integer>> set){
+        List<Map.Entry<String, Integer>> tempList = new ArrayList<>();
+        for (Map.Entry<String,Integer> entry : set){
+            tempList.add(entry);
+        }
+        return tempList;
+    }
+
+    /*
+     * Standardizes the record in the score board
+     *
+     * @return a string with a standard format
+     */
+    private List<String> format(List<Map.Entry<String, Integer>> entryList){
+
+        List<String> formatList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : entryList){
+            String entryFormat = entry.getKey() + " : " + entry.getValue();
+            formatList.add(entryFormat);
+        }
+        return formatList;
+    }
+
+    /*
+     * Sorts a queue in descending order
+     */
+    private void sortQueue(Queue<Map.Entry<String,
+            Integer>> queue){
+        int queueSize = queue.size();
+        for (int i = 0; i < queueSize; i++){
+
+            Map.Entry<String, Integer> first = queue.peek();
+            queue.poll();
+            int size = queue.size();
+            Map.Entry<String, Integer> second = queue.peek();
+
+            for (int j = 0; j < size; j++){
+                if (first.getValue() <= second.getValue()){
+                    queue.offer(second);
+                    queue.poll();
+                    second = queue.peek();
+                }else {
+                    queue.offer(first);
+                    first = second;
+                    queue.poll();
+                    second = queue.peek();
+                }
+            }
+            queue.offer(first);
+        }
+    }
+
+    /*
+     * A method to decide if the name is valid
+     *
+     * @retrun True if all the characters in the name is from
+     * 'A' - 'Z', 'a' - 'z', '0' - '9'. Otherwise, returns false.
+     */
+    private boolean validName(String name){
+        boolean valid = true;
+        for (int i = 0; i < name.length(); i++){
+            if (!(name.charAt(i) >= 'A' && name.charAt(i) <= 'Z') &&
+                    !(name.charAt(i) >= 'a' && name.charAt(i) <= 'z') &&
+                    !(name.charAt(i) >= '0' && name.charAt(i) <= '9')){
+                valid = false;
+            }
+        }
+        return valid;
+    }
+}

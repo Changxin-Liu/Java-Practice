@@ -1,0 +1,14 @@
+package pacman.hunter;
+
+public class Speedy extends Hunter {
+
+    public Speedy(){
+        super();
+    }
+
+    public Speedy(Hunter original){
+        super(original);
+    }
+
+
+}

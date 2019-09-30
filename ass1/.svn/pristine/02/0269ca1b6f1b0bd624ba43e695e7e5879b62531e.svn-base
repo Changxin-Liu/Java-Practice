@@ -1,0 +1,160 @@
+package pacman.board;
+
+import pacman.util.Position;
+
+public class PacmanBoard{
+
+    private Object[][] grid;
+    private int width;
+    private int height;
+
+    public PacmanBoard(int width,
+                       int height)
+            throws IllegalArgumentException{
+
+        if (width <= 0 || height <= 0){
+            throw new IllegalArgumentException();
+        }
+        this.width = width;
+        this.height = height;
+        grid = new Object[width][height];
+    }
+
+    public PacmanBoard(PacmanBoard other)
+            throws NullPointerException{
+
+        if (other == null){
+            throw new NullPointerException();
+        }
+        this.width = other.getWidth();
+        this.height = other.getHeight();
+        grid = new Object[this.width][this.height];
+    }
+
+    public int getWidth(){
+        return this.width;
+    }
+
+    public int getHeight(){
+        return this.height;
+    }
+
+    public void setEntry(Position position,
+                         BoardItem item)
+            throws IndexOutOfBoundsException, NullPointerException{
+
+        if (position == null ||
+                item == null){
+            throw new NullPointerException();
+        }
+
+        if (position.getX() >= this.width ||
+                position.getY() >= this.height){
+            throw new IndexOutOfBoundsException();
+        }
+
+        for (int x = 0; x < this.width; x++){
+            for(int y = 0; y < this.height; y++){
+                if (grid[x][y] == BoardItem.PACMAN_SPAWN &&
+                        item == BoardItem.PACMAN_SPAWN){
+                    grid[x][y] = BoardItem.NONE;
+                }
+                if (grid[x][y] == BoardItem.GHOST_SPAWN &&
+                        item == BoardItem.GHOST_SPAWN){
+                    grid[x][y] = BoardItem.NONE;
+                }
+            }
+        }
+
+        grid[position.getX()][position.getY()] = item;
+    }
+
+    public BoardItem getEntry(Position position)
+            throws IndexOutOfBoundsException, NullPointerException{
+
+        if (position == null){
+            throw new NullPointerException();
+        }
+
+        if (position.getX() > this.width - 1 ||
+                position.getY() > this.height - 1){
+            throw new IndexOutOfBoundsException();
+        }
+
+        return (BoardItem)grid[position.getX()][position.getY()];
+    }
+
+    public BoardItem eatDot(Position position)
+            throws IndexOutOfBoundsException, NullPointerException{
+
+        if (position == null){
+            throw new NullPointerException();
+        }
+
+        if (position.getX() > this.width - 1 ||
+                position.getY() > this.height - 1){
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (grid[position.getX()][position.getY()] == BoardItem.DOT){
+            grid[position.getX()][position.getY()] = BoardItem.NONE;
+            return BoardItem.DOT;
+        }else if (grid[position.getX()][position.getY()] == BoardItem.BIG_DOT){
+            grid[position.getX()][position.getY()] = BoardItem.BIG_DOT_SPAWN;
+            return BoardItem.BIG_DOT;
+        }
+
+        return (BoardItem) grid[position.getX()][position.getY()];
+    }
+
+    public Position getGhostSpawn(){
+
+        for (int x = 0; x < this.width; x++){
+            for (int y = 0; y < this.height; y++){
+                if (grid[x][y] == BoardItem.GHOST_SPAWN){
+                    return new Position(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Position getPacmanSpawn(){
+
+        for (int x = 0; x < this.width; x++){
+            for (int y = 0; y < this.height; y++){
+                if (grid[x][y] == BoardItem.PACMAN_SPAWN){
+                    return new Position(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean isEmpty(){
+
+        for (int x = 0; x < this.width; x++){
+            for (int y = 0; y < this.height; y++){
+                if (grid[x][y] != BoardItem.DOT &&
+                        grid[x][y] != BoardItem.BIG_DOT){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void reset(){
+        for (int x = 0; x < this.width; x++){
+            for (int y = 0; y < this.height; y++){
+                if (grid[x][y] == BoardItem.NONE){
+                    grid[x][y] = BoardItem.DOT;
+                }else if(grid[x][y] == BoardItem.BIG_DOT_SPAWN){
+                    grid[x][y] = BoardItem.BIG_DOT;
+                }
+            }
+        }
+    }
+
+
+}

@@ -1,0 +1,74 @@
+package pacman.hunter;
+
+import pacman.game.Entity;
+import pacman.ghost.Ghost;
+import pacman.ghost.Phase;
+import pacman.util.Direction;
+import pacman.util.Position;
+
+public abstract class Hunter extends Entity {
+
+    private boolean alive;
+    private boolean specialUsed;
+    private int duration;
+
+    public Hunter(){
+        alive = true;
+        specialUsed = false;
+        duration = 0;
+    }
+
+    public Hunter(Hunter original){
+        alive = original.alive;
+        specialUsed = original.specialUsed;
+        duration = original.duration;
+        setPosition(original.getPosition());
+        setDirection(original.getDirection());
+
+    }
+
+    public  boolean isDead(){
+        return !this.alive;
+    }
+
+    public void activateSpecial(int duration){
+        if(specialUsed == false){
+            if(duration > 0){
+                this.duration = duration;
+                specialUsed = true;
+            }
+        }
+    }
+
+    public int getSpecialDurationRemaining(){
+        return this.duration;
+    }
+
+    public boolean isSpecialActive(){
+        return (duration > 0);
+    }
+
+    public void hit(Ghost ghost)
+            throws NullPointerException{
+        if(ghost == null){
+            throw new NullPointerException();
+        }
+
+        if(this.getPosition().equals(ghost.getPosition())){
+            if(ghost.getPhase() == Phase.FRIGHTENED){
+                ghost.kill();
+            }else {
+                this.alive = false;
+            }
+        }
+    }
+
+    public void reset(){
+        this.alive = true;
+        this.specialUsed = false;
+        this.duration = 0;
+        setDirection(Direction.UP);
+        setPosition(new Position(0,0));
+    }
+
+}

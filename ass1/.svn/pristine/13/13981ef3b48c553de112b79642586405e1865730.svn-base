@@ -1,0 +1,97 @@
+package pacman.board;
+
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import pacman.util.Position;
+
+public class PacmanBoardTest {
+
+    PacmanBoard pacmanBoard;
+
+
+
+
+    @Before
+    public void setUp(){
+        pacmanBoard = new PacmanBoard(8,7);
+
+    }
+
+    @Test
+    public void getWidth() {
+        assertEquals(8, pacmanBoard.getWidth());
+        PacmanBoard pacmanBoard1 = new PacmanBoard(pacmanBoard);
+        assertEquals(8, pacmanBoard1.getWidth());
+
+
+    }
+
+    @Test
+    public void getHeight() {
+        assertEquals(7,pacmanBoard.getHeight());
+        PacmanBoard pacmanBoard1 = new PacmanBoard(pacmanBoard);
+        assertEquals(7, pacmanBoard1.getHeight());
+    }
+
+    @Test
+    public void setEntry() {
+
+    }
+
+    @Test
+    public void getEntry() {
+        Position position1 = new Position(1,2);
+        Position position2 = new Position(2,4);
+        Position position3 = new Position(6,3);
+        Position position4 = new Position(5,6);
+        Position position5 = new Position(7,2);
+
+
+        pacmanBoard.setEntry(position1, BoardItem.DOT);
+        assertEquals(BoardItem.DOT, pacmanBoard.getEntry(position1));
+        pacmanBoard.setEntry(position2, BoardItem.BIG_DOT);
+        assertEquals(BoardItem.BIG_DOT, pacmanBoard.getEntry(position2));
+        pacmanBoard.setEntry(position3, BoardItem.BIG_DOT_SPAWN);
+        assertEquals(BoardItem.BIG_DOT_SPAWN, pacmanBoard.getEntry(position3));
+        pacmanBoard.setEntry(position4, BoardItem.WALL);
+        assertEquals(BoardItem.WALL, pacmanBoard.getEntry(position4));
+        pacmanBoard.setEntry(position5, BoardItem.NONE);
+        assertEquals(BoardItem.NONE, pacmanBoard.getEntry(position5));
+
+
+        pacmanBoard.setEntry(position2, BoardItem.GHOST_SPAWN);
+        assertEquals(BoardItem.GHOST_SPAWN, pacmanBoard.getEntry(position2));
+        pacmanBoard.setEntry(position3, BoardItem.GHOST_SPAWN);
+        assertEquals(BoardItem.GHOST_SPAWN, pacmanBoard.getEntry(position3));
+        assertEquals(BoardItem.NONE, pacmanBoard.getEntry(position2));
+
+        pacmanBoard.setEntry(position4, BoardItem.PACMAN_SPAWN);
+        assertEquals(BoardItem.PACMAN_SPAWN, pacmanBoard.getEntry(position4));
+        pacmanBoard.setEntry(position5, BoardItem.PACMAN_SPAWN);
+        assertEquals(BoardItem.PACMAN_SPAWN, pacmanBoard.getEntry(position5));
+        assertEquals(BoardItem.NONE, pacmanBoard.getEntry(position4));
+
+
+    }
+
+    @Test
+    public void eatDot() {
+    }
+
+    @Test
+    public void getGhostSpawn() {
+    }
+
+    @Test
+    public void getPacmanSpawn() {
+    }
+
+    @Test
+    public void isEmpty() {
+    }
+
+    @Test
+    public void reset() {
+    }
+}

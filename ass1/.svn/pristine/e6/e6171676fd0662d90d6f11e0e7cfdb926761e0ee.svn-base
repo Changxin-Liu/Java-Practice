@@ -1,0 +1,140 @@
+package pacman.score;
+
+import java.util.*;
+
+
+public class ScoreBoard {
+
+    private Map<String, Integer> scoreBoard;
+    private int currentScore;
+
+    public ScoreBoard(){
+        scoreBoard = new HashMap<>();
+        currentScore = 0;
+    }
+
+    public List<String> getEntriesByName(){
+        if (scoreBoard != null) {
+            Set<Map.Entry<String, Integer>> set = scoreBoard.entrySet();
+            List<String> scoreEntryList = format(addToList(set));
+            Collections.sort(scoreEntryList);
+            return scoreEntryList;
+        }
+        return new ArrayList<>();
+
+    }
+
+    public List<String> getEntriesByScore(){
+        if (scoreBoard != null) {
+            Set<Map.Entry<String, Integer>> set = scoreBoard.entrySet();
+            Queue<Map.Entry<String, Integer>> queue = new LinkedList<>();
+            for (Map.Entry<String, Integer> entry : set) {
+                queue.offer(entry);
+            }
+            sortQueue(queue);
+            List<Map.Entry<String, Integer>> list = new ArrayList<>();
+            int queueSize = queue.size();
+            for (int i = 0; i < queueSize; i++) {
+                list.add(queue.poll());
+            }
+            return format(list);
+        }
+        return new ArrayList<>();
+
+    }
+
+    public void setScore(String name, int score){
+        if (name != null){
+            for (int i = 0; i < name.length(); i++){
+                if ((name.charAt(i) >= 'A' && name.charAt(i) <= 'Z') ||
+                        (name.charAt(i) >= 'a' && name.charAt(i) <= 'z') ||
+                        (name.charAt(i) >= '0' && name.charAt(i) <= '9')){
+                    if (score >= 0){
+                        scoreBoard.put(name, score);
+                    }
+                }
+            }
+        }
+    }
+
+    public void setScores(Map<String,Integer> scores){
+        if (scores != null){
+            Set<String> key = scores.keySet();
+            for (String name : key){
+                if (name != null){
+                    for (int i = 0; i < name.length(); i++){
+                        if ((name.charAt(i) >= 'A' && name.charAt(i) <= 'Z') ||
+                                (name.charAt(i) >= 'a' && name.charAt(i) <= 'z') ||
+                                (name.charAt(i) >= '0' && name.charAt(i) <= '9')){
+                            if (scores.get(name) >= 0){
+                                scoreBoard.put(name, scores.get(name));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void increaseScore(int additional){
+        if (additional >= 0) {
+            currentScore += additional;
+        }
+    }
+
+    public int getScore(){
+        return currentScore;
+    }
+
+    public void reset(){
+        currentScore = 0;
+    }
+
+    private List<Map.Entry<String,
+            Integer>> addToList(Set<Map.Entry<String,
+            Integer>> set){
+        List<Map.Entry<String, Integer>> tempList = new ArrayList<>();
+        for (Map.Entry<String,Integer> entry : set){
+            tempList.add(entry);
+        }
+        return tempList;
+    }
+
+    private List<String> format(List<Map.Entry<String, Integer>> entryList){
+
+        List<String> formatList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : entryList){
+            String entryFormat = entry.getKey() + " : " + entry.getValue();
+            formatList.add(entryFormat);
+        }
+        return formatList;
+    }
+
+    private Queue<Map.Entry<String,
+            Integer>> sortQueue(Queue<Map.Entry<String,
+            Integer>> queue){
+        int queueSize = queue.size();
+        for (int i = 0; i < queueSize; i++){
+
+            Map.Entry<String, Integer> first = queue.peek();
+            queue.poll();
+            int size = queue.size();
+            Map.Entry<String, Integer> second = queue.peek();
+
+            for (int j = 0; j < size; j++){
+                if (first.getValue() >= second.getValue()){
+                    queue.offer(second);
+                    queue.poll();
+                    second = queue.peek();
+                }else {
+                    queue.offer(first);
+                    first = second;
+                    queue.poll();
+                    second = queue.peek();
+                }
+            }
+            queue.offer(first);
+        }
+        return queue;
+    }
+}

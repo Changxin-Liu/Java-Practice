@@ -1,0 +1,57 @@
+package pacman.score;
+
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
+public class ScoreBoardTest {
+
+    private ScoreBoard scoreBoard;
+
+    @Before
+    public void setUp(){
+        scoreBoard = new ScoreBoard();
+    }
+
+    @Test
+    public void Constructor1(){
+        assertEquals(0,scoreBoard.getScore());
+        assertEquals(new ArrayList<>(),scoreBoard.getEntriesByName());
+        assertEquals(new ArrayList<>(),scoreBoard.getEntriesByScore());
+    }
+
+    @Test
+    public void Constructor2(){
+
+    }
+
+    @Test
+    public void getEntriesByName() {
+    }
+
+    @Test
+    public void getEntriesByScore() {
+    }
+
+    @Test
+    public void setScore() {
+    }
+
+    @Test
+    public void setScores() {
+    }
+
+    @Test
+    public void increaseScore() {
+    }
+
+    @Test
+    public void getScore() {
+    }
+
+    @Test
+    public void reset() {
+    }
+}

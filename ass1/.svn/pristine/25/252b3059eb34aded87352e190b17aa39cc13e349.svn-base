@@ -1,0 +1,98 @@
+package pacman.board;
+
+import java.io.Serializable;
+
+public enum BoardItem{
+    NONE,
+    WALL,
+    DOT,
+    BIG_DOT,
+    BIG_DOT_SPAWN,
+    GHOST_SPAWN,
+    PACMAN_SPAWN;
+
+    public int getScore(){
+        switch (this){
+            case NONE:
+                return 0;
+            case WALL:
+                return 0;
+            case DOT:
+                return 10;
+            case BIG_DOT:
+                return 15;
+            case BIG_DOT_SPAWN:
+                return 0;
+            case GHOST_SPAWN:
+                return 0;
+            case PACMAN_SPAWN:
+                return 0;
+                default:
+                    return 0;
+        }
+    }
+
+    public boolean getPathable(){
+        switch (this){
+            case NONE:
+                return true;
+            case WALL:
+                return false;
+            case DOT:
+                return true;
+            case BIG_DOT:
+                return true;
+            case BIG_DOT_SPAWN:
+                return true;
+            case GHOST_SPAWN:
+                return true;
+            case PACMAN_SPAWN:
+                return true;
+                default:
+                    return false;
+        }
+    }
+
+    public char getChar(){
+        switch (this){
+            case NONE:
+                return 'o';
+            case WALL:
+                return 'X';
+            case DOT:
+                return '1';
+            case BIG_DOT:
+                return 'B';
+            case BIG_DOT_SPAWN:
+                return 'b';
+            case GHOST_SPAWN:
+                return '$';
+            case PACMAN_SPAWN:
+                return 'P';
+                default:
+                    return 0;
+        }
+    }
+
+    public static BoardItem getItem(char key) throws IllegalArgumentException{
+        switch (key){
+            case 'o':
+                return BoardItem.NONE;
+            case 'X':
+                return BoardItem.WALL;
+            case '1':
+                return BoardItem.DOT;
+            case 'B':
+                return BoardItem.BIG_DOT;
+            case 'b':
+                return BoardItem.BIG_DOT_SPAWN;
+            case '$':
+                return BoardItem.GHOST_SPAWN;
+            case 'P':
+                return BoardItem.PACMAN_SPAWN;
+                default:
+                    return null;
+        }
+    }
+}
+

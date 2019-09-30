@@ -1,0 +1,16 @@
+package pacman.ghost;
+
+public class Clyde {
+
+    public Clyde(){}
+
+    public String getColour(){
+        return "#e78c45";
+    }
+
+    public GhostType getType(){
+        return GhostType.CLYDE;
+    }
+
+
+}

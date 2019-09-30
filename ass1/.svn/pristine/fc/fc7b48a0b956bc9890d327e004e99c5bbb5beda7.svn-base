@@ -1,0 +1,20 @@
+package pacman.ghost;
+
+public enum Phase {
+    CHASE,
+    FRIGHTENED,
+    SCATTER;
+
+    public int getDuration(){
+        switch (this){
+            case CHASE:
+                return 20;
+            case SCATTER:
+                return 10;
+            case FRIGHTENED:
+                return 30;
+                default:
+                    return 0;
+        }
+    }
+}

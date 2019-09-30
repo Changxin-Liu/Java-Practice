@@ -1,0 +1,30 @@
+package pacman.hunter;
+
+import pacman.ghost.Ghost;
+
+public class Hungry extends Hunter {
+
+    private boolean alive;
+
+    public Hungry(){
+        super();
+    }
+
+    public Hungry(Hunter original){
+        super(original);
+    }
+
+    @Override
+    public void hit(Ghost ghost) {
+        if (ghost == null){
+            throw new NullPointerException();
+        }
+        if(this.getPosition().equals(ghost.getPosition())){
+            if(this.isSpecialActive() == true){
+                ghost.kill();
+            }else {
+                super.hit(ghost);
+            }
+        }
+    }
+}

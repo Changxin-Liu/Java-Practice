@@ -1,0 +1,42 @@
+package pacman.game;
+
+import pacman.util.Direction;
+import pacman.util.Position;
+
+public abstract class Entity implements Moveable{
+
+    private Position position;
+    private Direction direction;
+
+
+    public Entity(){
+        position = new Position(0,0);
+        direction = Direction.UP;
+    }
+
+    public Entity(Position position,
+                  Direction direction){
+        this.position = position;
+        this.direction = direction;
+    }
+
+    public Position getPosition(){
+        return position;
+    }
+
+
+    public void setPosition(Position position){
+        this.position = position;
+    }
+
+
+
+    public void setDirection(Direction direction){
+        this.direction = direction;
+    }
+
+    public Direction getDirection(){
+        return direction;
+    };
+
+}

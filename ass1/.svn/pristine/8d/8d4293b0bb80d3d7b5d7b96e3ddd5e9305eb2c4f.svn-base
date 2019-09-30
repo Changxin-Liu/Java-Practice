@@ -1,0 +1,15 @@
+package pacman.ghost;
+
+public class Blinky extends Ghost{
+
+    public Blinky(){}
+
+    public String getColour(){
+        return "#d54e53";
+    }
+
+    public GhostType getType(){
+        return GhostType.BLINKY;
+    }
+
+}

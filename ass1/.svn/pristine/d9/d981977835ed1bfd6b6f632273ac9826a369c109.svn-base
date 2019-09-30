@@ -1,0 +1,65 @@
+package pacman.util;
+
+/**
+ * Representing directions in a 2D plane
+ */
+public enum Direction{
+
+    // Facing to the left
+    LEFT(-1,0),
+
+    // Facing to the right
+    RIGHT(1,0),
+
+    // Facing up
+    UP(0,-1),
+
+    // Facing down
+    DOWN(0,1);
+
+    // representing the value for x-coordinate
+    private int x;
+
+    // representing the value for y-coordinate
+    private int y;
+
+    // Constructs a direction with given values for x,y coordinates
+    // x represents the value for x-coordinate
+    // y represents the value for y-coordinate
+    private Direction(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * Returns the offset of a direction
+     *
+     * @return the position of a direction
+     */
+    public Position offset(){
+        return new Position(this.x,this.y);
+    }
+
+
+    /**
+     * Returns the opposite of a direction
+     *
+     * @return a direction's opposite
+     */
+    public Direction opposite(){
+        switch (this){
+            case LEFT:
+                return RIGHT;
+            case RIGHT:
+                return LEFT;
+            case UP:
+                return DOWN;
+            case DOWN:
+                return UP;
+                default:
+                    return null;
+        }
+    }
+
+}
+

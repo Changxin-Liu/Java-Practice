@@ -1,0 +1,19 @@
+package pacman.ghost;
+
+/**
+ * Definition of GhostType's available in the game.
+ */
+public enum GhostType {
+
+    // a specified ghost type called BLINKY
+    BLINKY,
+
+    // a specified ghost type called CLYDE
+    CLYDE,
+
+    // a specified ghost type called INKY
+    INKY,
+
+    // a specified ghost type called PINKY
+    PINKY;
+}

@@ -1,0 +1,95 @@
+package pacman.util;
+
+/**
+ * A class representing coordinates, which is similar to a Point class.
+ */
+public class Position {
+    /*
+     * x represents the value for x-coordinate
+     * y represents the value for y-coordinate
+     */
+    private int x;
+    private int y;
+
+    /**
+     * Constructs a position with specified x, y.
+     *
+     * @param x the value for x-coordinate
+     * @param y the value for y-coordinate
+     */
+    public Position(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * Gets the value of x-coordinate
+     *
+     * @return the value of x-coordinate
+     */
+    public int getX(){
+        return x;
+    }
+
+    /**
+     * Gets the value of y-coordinate
+     *
+     * @return the value of y-coordinate
+     */
+    public int getY(){
+        return y;
+    }
+
+    /**
+     * Calculates the distance between two given positions
+     *
+     * @param other another position
+     * @return the Euclidean distance between two positions
+     */
+    public double distance(Position other){
+        int tempX = other.getX();
+        int tempY = other.getY();
+        return Math.sqrt((tempX - this.x) * (tempX - this.x) +
+                (tempY - this.y) * (tempY - this.y));
+    }
+
+    /**
+     * Adds two positions together
+     *
+     * @param other the position that needs to be added
+     * @return original position + given position
+     */
+    public Position add(Position other){
+        int tempX = other.getX();
+        int tempY = other.getY();
+        return new Position(this.x + tempX, this.y + tempY);
+    }
+
+    /**
+     * Multiply by a factor on both x and y values
+     *
+     * @param factor the factor that needs to be multiplied
+     * @return a new position multiplied by the factor
+     */
+    public Position multiply(int factor){
+        return new Position(this.x * factor,
+                this.y * factor);
+    }
+
+    @Override
+    public boolean equals(Object other){
+        // Decides if the parameter is
+        if (other instanceof Position){
+            Position otherPosition = (Position)other;
+            return (x == otherPosition.getX() &&
+                    y == otherPosition.getY());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return 19 * this.x + 23 * this.y;
+    }
+
+}

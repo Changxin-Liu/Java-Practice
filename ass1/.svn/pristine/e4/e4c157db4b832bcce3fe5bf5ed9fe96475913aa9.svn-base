@@ -1,0 +1,37 @@
+package pacman.score;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class ScoreBoardTest {
+    @Before
+
+
+    @Test
+    public void getEntriesByName() {
+    }
+
+    @Test
+    public void getEntriesByScore() {
+    }
+
+    @Test
+    public void setScore() {
+    }
+
+    @Test
+    public void setScores() {
+    }
+
+    @Test
+    public void increaseScore() {
+    }
+
+    @Test
+    public void getScore() {
+    }
+
+    @Test
+    public void reset() {
+    }
+}

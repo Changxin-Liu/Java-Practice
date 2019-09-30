@@ -1,0 +1,319 @@
+package pacman.game;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import pacman.ghost.Ghost;
+import pacman.ghost.GhostType;
+import pacman.util.Position;
+import pacman.util.UnpackableException;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+
+import static org.junit.Assert.*;
+
+public class GameReaderTest {
+
+    private static BufferedReader bufferedReader;
+
+    @Before
+    public void setUp() throws Exception {
+        String gameReaderTest = ";\n" +
+                ";\n" +
+                ";\n" +
+                "[Board]\n" +
+                "8,7\n" +
+                "XXXXXXXX\n" +
+                "X010000X\n" +
+                "XP00001X\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX\n" +
+                "\n" +
+                "[Game]\n" +
+                "title = GameReaderTest\n" +
+                "author = Changxin Liu s4524500\n" +
+                "lives = 10\n" +
+                "level = 5\n" +
+                "score = 999\n" +
+                "hunter = 5,4,DOWN,15,HUNGRY\n" +
+                "inky = 4,5,RIGHT,CHASE:10\n" +
+                "blinky = 3,2,LEFT,FRIGHTENED:12\n" +
+                "clyde = 3,3,UP,SCATTER:8\n" +
+                "pinky = 1,5,UP,SCATTER:2\n" +
+                "\n" +
+                "[Scores]\n" +
+                "Ben:32\n" +
+                "Joe:22\n" +
+                "Tony:99\n";
+        bufferedReader = new BufferedReader
+                (new StringReader(gameReaderTest));
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        try {
+            bufferedReader.close();
+        }catch (Exception e){
+            System.err.println("Error closing file");
+        }
+    }
+
+    @Test
+    public void read() throws UnpackableException, IOException {
+
+        PacmanGame pacmanGame;
+
+        try {
+            pacmanGame = GameReader.read(bufferedReader);
+
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+
+        assertEquals("GameReaderTest", pacmanGame.getTitle());
+        assertEquals("Changxin Liu s4524500", pacmanGame.getAuthor());
+        assertEquals("8,7", new Position(pacmanGame.getBoard().getWidth(),
+                pacmanGame.getBoard().getHeight()).toString());
+        assertEquals(999, pacmanGame.getScores().getScore());
+        assertEquals("5,4,DOWN,15,HUNGRY", pacmanGame.getHunter().toString());
+        for (Ghost ghost : pacmanGame.getGhosts()) {
+            if (ghost.getType() == GhostType.BLINKY) {
+                assertEquals("3,2,LEFT,FRIGHTENED:12", ghost.toString());
+            } else if (ghost.getType() == GhostType.INKY) {
+                assertEquals("4,5,RIGHT,CHASE:10", ghost.toString());
+            } else if (ghost.getType() == GhostType.PINKY) {
+                assertEquals("1,5,UP,SCATTER:2", ghost.toString());
+            } else if (ghost.getType() == GhostType.CLYDE) {
+                assertEquals("3,3,UP,SCATTER:8", ghost.toString());
+            }
+        }
+
+        assertEquals("[Ben : 32, Joe : 22, Tony : 99]", pacmanGame.getScores().getEntriesByName().toString());
+        assertEquals("XXXXXXXX\n" +
+                "X010000X\n" +
+                "XP00001X\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX", pacmanGame.getBoard().toString());
+    }
+
+    @Test (expected = UnpackableException.class)
+    public void read2() throws UnpackableException, IOException {
+        BufferedReader bufferedReader1 = new BufferedReader(new FileReader("test2.txt"));
+
+        try{
+            PacmanGame pacmanGame = GameReader.read(bufferedReader1);
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+    }
+
+    @Test (expected = UnpackableException.class)
+    public void read3() throws UnpackableException, IOException {
+        String test3 = "[Board\n" +
+                "8,7\n" +
+                "XXXXXXXX\n" +
+                "X010000X\n" +
+                "XP00001X\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX\n" +
+                "\n" +
+                "Game]\n" +
+                "title = GameReaderTest\n" +
+                "author = Changxin Liu s4524500\n" +
+                "lives = 10\n" +
+                "level = 5\n" +
+                "score = 999\n" +
+                "hunter = 5,4,DOWN,15,HUNGRY\n" +
+                "blinky = 3,2,LEFT,FRIGHTENED:12\n" +
+                "inky = 4,5,RIGHT,CHASE:10\n" +
+                "pinky = 1,5,UP,SCATTER:2\n" +
+                "clyde = 3,3,UP,SCATTER:8\n" +
+                "\n" +
+                "[Scres]\n" +
+                "Ben : 32\n" +
+                "Joe : 22\n" +
+                "Tony : 99";
+
+        BufferedReader bufferedReader1 = new BufferedReader(new StringReader(test3));
+
+        try{
+            PacmanGame pacmanGame = GameReader.read(bufferedReader1);
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+    }
+
+    @Test (expected = UnpackableException.class)
+    public void read4() throws UnpackableException, IOException {
+        String test4 = "[Board]\n" +
+                "8,7\n" +
+                "XXXXXXXX\n" +
+                "X010000X\n" +
+                "XP00001\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX\n" +
+                "\n" +
+                "[Game]\n" +
+                "title = GameReaderTest\n" +
+                "author = Changxin Liu s4524500\n" +
+                "lives = 10\n" +
+                "level = 5\n" +
+                "score = 999\n" +
+                "hunter = 5,4,DOWN,15,HUNGRY\n" +
+                "blinky = 3,2,LEFT,FRIGHTENED:12\n" +
+                "inky = 4,5,RIGHT,CHASE:10\n" +
+                "pinky = 1,5,UP,SCATTER:2\n" +
+                "clyde = 3,3,UP,SCATTER:8\n" +
+                "\n" +
+                "[Scores]\n" +
+                "Ben : 32\n" +
+                "Joe : 22\n" +
+                "Tony : 99";
+
+        BufferedReader bufferedReader1 = new BufferedReader(new StringReader(test4));
+
+        try{
+            PacmanGame pacmanGame = GameReader.read(bufferedReader1);
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+    }
+
+    @Test (expected = UnpackableException.class)
+    public void read5() throws UnpackableException, IOException {
+        String test4 = "[Board]\n" +
+                "8,7\n" +
+                "XXXXXXXX\n" +
+                "X010000X\n" +
+                "\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX\n" +
+                "\n" +
+                "[Game]\n" +
+                "title = GameReaderTest\n" +
+                "author = Changxin Liu s4524500\n" +
+                "lives = 10\n" +
+                "level = 5\n" +
+                "score = 999\n" +
+                "hunter = 5,4,DOWN,15,HUNGRY\n" +
+                "blinky = 3,2,LEFT,FRIGHTENED:12\n" +
+                "inky = 4,5,RIGHT,CHASE:10\n" +
+                "pinky = 1,5,UP,SCATTER:2\n" +
+                "clyde = 3,3,UP,SCATTER:8\n" +
+                "\n" +
+                "[Scores]\n" +
+                "Ben : 32\n" +
+                "Joe : 22\n" +
+                "Tony : 99";
+
+        BufferedReader bufferedReader1 = new BufferedReader(new StringReader(test4));
+
+        try{
+            PacmanGame pacmanGame = GameReader.read(bufferedReader1);
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+    }
+
+    @Test (expected = UnpackableException.class)
+    public void read6() throws UnpackableException, IOException {
+        String test4 = "[Board]\n" +
+                "8,7\n" +
+                "XXXXXXXX\n" +
+                "X010000X\n" +
+                "XP00001X\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX\n" +
+                "\n" +
+                "[Game]\n" +
+                "title = GameReaderTest\n" +
+                "author = Changxin Liu s4524500\n" +
+                "lives = 10\n" +
+                "level = 5@\n" +
+                "score = 999\n" +
+                "hunter = 5,4,DOWN,15,HUNGRY\n" +
+                "blinky = 3,2,LE,FT,FRIGHTENED:12\n" +
+                "inky = 4,5,RIGHT,CHASE:10\n" +
+                "pinky = 1,5,UP,SCATTER:2\n" +
+                "clyde = 3,3,UP,SCATTER:8\n" +
+                "\n" +
+                "[Scores]\n" +
+                "Ben : 32\n" +
+                "Joe : 2!2\n" +
+                "Tony : 99";
+
+        BufferedReader bufferedReader1 = new BufferedReader(new StringReader(test4));
+
+        try{
+            PacmanGame pacmanGame = GameReader.read(bufferedReader1);
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+    }
+
+    @Test (expected = UnpackableException.class)
+    public void read7() throws UnpackableException, IOException {
+        String test4 = "[Board]\n" +
+                "8,7\n" +
+                "XXXXXXXX\n" +
+                "X010000X\n" +
+                "XP00001X\n" +
+                "X000X00X\n" +
+                "X$00000X\n" +
+                "XB0000bX\n" +
+                "XXXXXXXX\n" +
+                "[Game]\n" +
+                "title = GameReaderTest\n" +
+                "author = Changxin Liu s4524500\n" +
+                "lives = 10\n" +
+                "level = 5\n" +
+                "score = 999\n" +
+                "hunter = 5,4,DOWN,15,HUNGRY\n" +
+                "blinky = 3,2,LEFT,FRIGHTENED:12\n" +
+                "inky = 4,5,RIGHT,CHASE:10\n" +
+                "pinky = 1,5,UP,SCATTER:2\n" +
+                "clyde = 3,3,UP,SCATTER:8\n" +
+                "[Scores]\n" +
+                "Ben : 32\n" +
+                "Joe : 22\n" +
+                "Tony : 99";
+
+        BufferedReader bufferedReader1 = new BufferedReader(new StringReader(test4));
+
+        try{
+            PacmanGame pacmanGame = GameReader.read(bufferedReader1);
+        } catch (UnpackableException e){
+            throw new UnpackableException();
+        } catch (IOException e){
+            throw new IOException();
+        }
+    }
+}

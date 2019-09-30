@@ -1,0 +1,14 @@
+package pacman.ghost;
+
+public class Inky extends Ghost{
+
+    public Inky(){}
+
+    public String getColour(){
+        return "#7aa6da";
+    }
+
+    public GhostType getType(){
+        return GhostType.INKY;
+    }
+}

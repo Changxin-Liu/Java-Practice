@@ -1,0 +1,14 @@
+package pacman.ghost;
+
+public class Pinky extends Ghost{
+
+    public Pinky(){}
+
+    public String getColour(){
+        return "#c397d8";
+    }
+
+    public GhostType getType(){
+        return GhostType.PINKY;
+    }
+}

@@ -1,0 +1,18 @@
+package pacman.ghost;
+
+public enum Phase {
+    CHASE(20),
+    FRIGHTENED(10),
+    SCATTER(30);
+
+    private int duration;
+
+    private Phase(int duration){
+        this.duration = duration;
+    }
+
+    public int getDuration(){
+        return this.duration;
+    }
+
+}

@@ -1,0 +1,58 @@
+package pacman.ghost;
+
+import pacman.game.Entity;
+import pacman.util.Direction;
+import pacman.util.Position;
+
+public abstract class Ghost extends Entity {
+
+    private boolean alive;
+    private Phase phase;
+    private int duration;
+
+    public Ghost(){
+        alive = true;
+        phase = Phase.SCATTER;
+        duration = Phase.SCATTER.getDuration();
+
+    }
+
+    public void setPhase(Phase newPhase, int duration){
+        if(newPhase != null){
+            phase = newPhase;
+        }
+        if(duration >= 0){
+            this.duration = duration;
+        }else {
+            this.duration = 0;
+        }
+    }
+
+    public Phase getPhase(){
+        return phase;
+    }
+
+    public String phaseInfo(){
+        return this.phase + ":" + this.duration;
+    }
+
+    public abstract String getColour();
+
+    public abstract GhostType getType();
+
+    public void kill(){
+        this.alive = false;
+    }
+
+    public boolean isDead(){
+        return !this.alive;
+    }
+
+    public void reset(){
+        this.alive = true;
+        this.phase = Phase.SCATTER;
+        this.duration = Phase.SCATTER.getDuration();
+        setDirection(Direction.UP);
+        setPosition(new Position(0,0));
+    }
+}

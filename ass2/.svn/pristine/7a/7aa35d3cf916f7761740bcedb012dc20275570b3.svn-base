@@ -1,0 +1,13 @@
+package pacman.util;
+
+public class UnpackableException extends Exception {
+
+
+    public UnpackableException(){
+        super();
+    }
+
+    public UnpackableException(String message){
+        super(message);
+    }
+}
