@@ -1,8 +1,0 @@
-pacman
-pacman.board
-pacman.display
-pacman.game
-pacman.ghost
-pacman.hunter
-pacman.score
-pacman.util
